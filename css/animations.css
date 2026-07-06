@@ -1,0 +1,116 @@
+/* ==========================================================================
+   AirLink — animations.css
+   Scroll reveals, keyframes, SVG line drawing
+   Principle: animate to explain, never to decorate.
+   ========================================================================== */
+
+/* ---------- Scroll reveal system ----------
+   .reveal elements start hidden and slide up when .in-view
+   is added by the Intersection Observer (js/observer.js).
+   data-delay="1..6" staggers siblings. */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal[data-delay="1"] { transition-delay: 0.12s; }
+.reveal[data-delay="2"] { transition-delay: 0.24s; }
+.reveal[data-delay="3"] { transition-delay: 0.36s; }
+.reveal[data-delay="4"] { transition-delay: 0.48s; }
+.reveal[data-delay="5"] { transition-delay: 0.60s; }
+.reveal[data-delay="6"] { transition-delay: 0.72s; }
+
+/* ---------- SVG connection lines ----------
+   Paths get their real length set by js/animations.js,
+   then draw themselves when the parent section is .in-view. */
+
+.draw-line {
+  stroke-dasharray: var(--len, 1200);
+  stroke-dashoffset: var(--len, 1200);
+  transition: stroke-dashoffset 2.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.in-view .draw-line { stroke-dashoffset: 0; }
+
+.in-view .draw-line:nth-of-type(2) { transition-delay: 0.15s; }
+.in-view .draw-line:nth-of-type(3) { transition-delay: 0.30s; }
+.in-view .draw-line:nth-of-type(4) { transition-delay: 0.45s; }
+.in-view .draw-line:nth-of-type(5) { transition-delay: 0.60s; }
+.in-view .draw-line:nth-of-type(6) { transition-delay: 0.75s; }
+.in-view .draw-line:nth-of-type(7) { transition-delay: 0.90s; }
+
+/* ---------- Keyframes ---------- */
+
+/* Hero device float — ~5px, very slow, Apple-style */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.float-slow { animation: float-slow 6s ease-in-out infinite; }
+
+/* Hero background gradient drift */
+@keyframes drift-a {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-60px, 50px); }
+}
+@keyframes drift-b {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(70px, -40px); }
+}
+
+/* Scroll indicator nudge */
+@keyframes scroll-nudge {
+  0%, 100% { transform: translateY(0);   opacity: 0.9; }
+  50%      { transform: translateY(6px); opacity: 0.5; }
+}
+
+/* Status LED pulse (single soft breathing) */
+@keyframes led-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+.led-pulse { animation: led-pulse 2.4s ease-in-out infinite; }
+
+/* Node ring — subtle expanding ping on dark diagrams */
+@keyframes node-ping {
+  0%   { opacity: 0.35; transform: scale(1.1); }
+  70%  { opacity: 0;    transform: scale(1.55); }
+  100% { opacity: 0;    transform: scale(1.55); }
+}
+.in-view .v-node-ring { animation: node-ping 3.6s ease-out infinite; }
+
+/* ---------- Reduced motion ----------
+   Respect users who prefer minimal animation:
+   show everything immediately, stop all movement. */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .draw-line { stroke-dashoffset: 0; }
+
+  .hero__canvas { display: none; }
+
+  .vision-particles,
+  .hub-svg animateMotion { display: none; }
+}
